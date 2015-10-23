@@ -12,7 +12,7 @@ I began with building population trees with excel *("quick-and-dirty-approach")*
 | :--: |:---:| :--:| :-------------:|| :--:| :--:|
 | 1    | 74  | m   | lower secundary education | *I'm not sure, but it looks like an age pyramid. (..) Red is for women and blue is men? What's the light color for?* | 
 | 2    | 61  | f   | lower secundary education | *I don't know. (..) The left scale is age (..) It shows age classes for men and women -  A What is 1st class?* | 
-| 3    | 17  | m   | high school| *I know this from this. It's an age pyramid. Red is woman, blue is man? You know that normmaly man are left and woman are on the right.*| 
+| 3    | 17  | m   | high school| *I know this from school. It's an age pyramid. Red is woman, blue is man? You know that normaly man are left and woman are on the right.*| 
 
 
 I concluded that people are able to identify the age structure. The y-axis should be mirrored (with male on the left and female on the right as this seems to be standard). Victims and survivors should be double coded (e.g. with additional pie charts).
