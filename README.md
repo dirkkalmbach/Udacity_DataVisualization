@@ -9,7 +9,7 @@ I began with building population trees with excel *("quick-and-dirty-approach")*
 
 
 | No   | Age | Sex | Education                 | *What do you see here?* | 
-| :--: |:---:| :--:| :-------------:|| :--:| :--:|
+| :--: |:---:| :--:| :-------------:| :--:| :--:|
 | 1    | 74  | m   | lower secundary education | *I'm not sure, but it looks like an age pyramid. (..) Red is for women and blue is men? What's the light color for?* | 
 | 2    | 61  | f   | lower secundary education | *I don't know. (..) The left scale is age (..) It shows age classes for men and women -  A What is 1st class?* | 
 | 3    | 17  | m   | high school| *I know this from school. It's an age pyramid. Red is woman, blue is man? You know that normaly man are left and woman are on the right.*| 
