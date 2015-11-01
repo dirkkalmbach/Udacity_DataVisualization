@@ -23,7 +23,8 @@ I concluded that people are able to identify the age structure. The y-axis shoul
  
 ## Survey
 
-...
+- One interviewee argued that people in the past were not gettting as old as today and that I should cut the y-axis at the top. *(I therefore changed the last category from 75+ to 70+.)
+
 
 # Resources
 

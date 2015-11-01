@@ -1,0 +1,96 @@
+/*
+* {
+    border: 1px solid red !important;
+}
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*/
+
+
+/* FRAMEWORK */
+.row {
+    width: 100%;
+    display: flex;   
+}
+.col-1 {
+    width: 33.33%;
+}
+.col-2 {
+    width: 66.66%;
+}
+.col-3 {
+    width: 100%;
+}
+
+
+/* BACKGROUND DESIGN */
+#backgroundImage{z-index: 1;}
+#backgroundImage:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url(https://dl.dropboxusercontent.com/s/rzi0hrmu5p1hzjf/titanic_background.jpg?dl=0);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  opacity: 0.3;
+  filter:alpha(opacity=40);
+  height:100%;
+  width:100%;
+ }
+
+  
+#statistic {
+  position: absolute;
+  vertical-align: center;
+  padding: 5px;
+  font-size: 20px; 
+  /*
+  top: 100px;
+  right: 30px;
+  width: 200px;
+  height: 100px;
+   */
+  border: 0.5px solid;
+}
+
+
+.main{
+   height:320px;
+   width:320px;
+   margin:auto;
+   background-color:green;
+   z-index:-1;
+   opacity: 1;
+   filter:alpha(opacity=100);
+}
+
+
+/* MISC */
+  body {font-family: Helvetica, Arial, sans-serif;
+        font-size: 10px;}
+  h1 {font-family: Helvetica, Arial, sans-serif;
+        font-size: 80px; font-weight: lighter; text-align: center; padding: 5px; margin: 0px;}
+  h2 {font-family: Helvetica, Arial, sans-serif;
+        font-size: 40px; font-weight: lighter; text-align: center; padding: 5px; margin: 0px;}
+
+  .barTotalR {opacity: 0.15;}
+  .barTotalL {opacity: 0.15;}
+  .bar {opacity: 0.7;}
+
+
+/* BUTTON DESIGN */
+  #buttons {text-align: center}
+  .pure-button {
+      text-align: center;
+      color: white;
+      border-radius: 4px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);        
