@@ -34,7 +34,7 @@
   content: "";
   position: absolute;
   z-index: -1;
-  top: 0;
+  top: 180px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -82,7 +82,7 @@
         font-size: 80px; font-weight: lighter; text-align: center; padding: 5px; margin: 0px;}
   h2 {font-family: Helvetica, Arial, sans-serif;
         font-size: 40px; font-weight: lighter; text-align: center; padding: 5px; margin: 0px;}
-
+  #summary {font-size: 14px; font-weight: lighter; font-style: italic; padding-left: 50px; padding-right: 50px;}
   .barTotalR {opacity: 0.15;}
   .barTotalL {opacity: 0.15;}
   .bar {opacity: 0.7;}

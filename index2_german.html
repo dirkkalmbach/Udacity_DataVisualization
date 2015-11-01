@@ -23,6 +23,13 @@
 
   </div>
 
+<!-- SUMMARY -->
+  <div class="row">
+      <div class="col-3">
+        <p id="summary">Am 15. April 1912 sank die Titanic auf der Fahrt von England nach Amerika nach der Kollision mit einem Eisberg. Mehr als 1500 Menschen starben. Eine genauere Analyse der Opfer nach sozialer Herkunft, Alter und Geschlecht zeigt, dass die Überlebenschance massiv davon abhing, ob ein Passagier reich oder arm, männlich oder weiblich und Kind einer armen oder reichen Familie war.</p>
+      </div>
+  </div>
+
 <!-- 2ND TITLE -->
   <div class="row">
       <div class="col-3">
@@ -497,6 +504,35 @@ function updatePClass1() {
 
     var svg = d3.select("body").transition();
    
+
+    ///////////////////////////////////////////////////////
+    // Update Table
+
+    // Calculate male adult victims in % 
+    var m_percent = d3.format("%")(
+              d3.sum(adults, function(d) { return d.male1; }) /
+              d3.sum(adults, function(d) { return d.male_total1; })
+              );
+    // Calculate female adult victims in % 
+    var f_percent = d3.format("%")(
+              d3.sum(adults, function(d) { return d.female1; }) /
+              d3.sum(adults, function(d) { return d.female_total1; })
+              );
+
+    // Calculate child victims in %var f_percent = d3.format("%")(
+    var c_percent = d3.format("%")(
+              (d3.sum(childs, function(d) { return d.female1; })  +
+              (d3.sum(childs, function(d) { return d.male1; }) )  ) /
+              (d3.sum(childs, function(d) { return d.female_total1; })  +
+              (d3.sum(childs, function(d) { return d.male_total1; }) ) )
+              );
+
+    // Put it in Table
+    svg.select("#m").text(m_percent);
+    svg.select("#f").text(f_percent);
+    svg.select("#c").duration(750).text(c_percent).style("font-size",c_percent+"px");
+    ///////////////////////////////////////////////////////
+ 
 
     // UPDATE WIDTH OF LEFT BARS
     svg.selectAll(".barLeft")
