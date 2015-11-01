@@ -19,11 +19,10 @@ I began with building population trees with excel *("quick-and-dirty-approach")*
 | 3    | 17  | m   | high school| *I know this from school. It's an age pyramid. Red is woman, blue is man? You know that normaly man are left and woman are on the right.*| 
 
 
-I concluded that people are able to identify the age structure. The y-axis should be mirrored (with male on the left and female on the right as this seems to be standard). Victims and survivors should be double coded (e.g. with additional pie charts).
+I concluded that people are able to identify the age structure. The y-axis should be mirrored (with male on the left and female on the right as this seems to be standard). Victims and survivors should be double coded (e.g. with additional pie charts). One interviewee argued that people in the past were not gettting as old as today and that I should cut the y-axis at the top. *(I therefore changed the last category from 75+ to 70+.)
  
 ## Survey
 
-- One interviewee argued that people in the past were not gettting as old as today and that I should cut the y-axis at the top. *(I therefore changed the last category from 75+ to 70+.)
 
 
 # Resources
