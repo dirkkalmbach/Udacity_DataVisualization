@@ -1,0 +1,87 @@
+
+/*
+* {
+    border: 1px solid red !important;
+}
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*/
+
+/* FRAMEWORK */
+.row {
+    width: 100%;
+    display: flex;   
+}
+.col-1 {
+    width: 33.33%;
+}
+.col-2 {
+    width: 66.66%;
+}
+.col-3 {
+    width: 100%;
+}
+
+
+/* BACKGROUND DESIGN */
+#backgroundImage{z-index: 1;}
+#backgroundImage:before {
+  background-color: grey;
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url(https://dl.dropboxusercontent.com/s/rzi0hrmu5p1hzjf/titanic_background.jpg?dl=0);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  opacity: 0.3;
+  filter:alpha(opacity=40);
+  height:100%;
+  width:100%;
+ }
+
+.label {font-weight: lighter; font-size: 10px;}
+
+#statistic {
+  position: absolute;
+  vertical-align: center;
+  font-size: 15px; 
+  text-align: left;
+  border: 0.5px solid;
+}
+
+.placeholder_size {font-weight: lighter; font-size: 50px;  }
+.stat {font-size: 18px; font-weight: lighter; text-align: left;}
+
+
+
+/* MISC */
+  body {font-family: Helvetica, Arial, sans-serif;
+        font-size: 10px;}
+  h1 {font-family: Helvetica, Arial, sans-serif;
+        font-size: 50px; font-weight: lighter; text-align: center; padding: 5px; margin: 0px;}
+  h2 {font-family: Helvetica, Arial, sans-serif;
+        font-size: 40px; font-weight: bold; text-align: center; padding: 5px; margin: 0px;}
+  h3 {font-family: Helvetica, Arial, sans-serif;
+        font-size: 30px; font-weight: lighter; text-align: left; margin: 0px;}
+
+  #summary {font-size: 14px; font-weight: lighter; font-style: italic; padding-left: 50px; padding-right: 50px;}
+  #conclusion {font-size: 30px; font-weight: lighter; text-align: center;}
+  .barTotalR {opacity: 0.15;}
+  .barTotalL {opacity: 0.15;}
+  .bt {opacity: 0.15;}
+  .bl {opacity: 0.15;}
+  .bar {opacity: 0.7;}
+
+
+/* BUTTON DESIGN */
+  #buttons {text-align: center};
+          

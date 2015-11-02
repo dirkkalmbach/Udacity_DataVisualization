@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link href="css/main_final.css" rel="stylesheet" type="text/css" >
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+  </head>
+
+  <body>
+    <div class="grid"> 
+      <div id="backgroundImage">
+      <!-- TITLE -->
+        <div class="row">
+            <div class="col-3">
+              <h1>The poorest among the poorest are the real victims</h1>
+            </div>
+        </div>
+
+      <!-- SUMMARY -->
+        <div class="row">
+            <div class="col-3">
+              <p id="summary">On April 15th 1912, the Titanic sank on its way from England to America after collision with an iceberg. More than 1500 people died. A detailed analysis of the victims according to social status, age and sex shows that the chance of surviving the tragedy massively depended on whether a passenger was rich or poor (measured by passenger class). Furthermore, we can see that percentually more poor women than wealthy women lost their lives in the tragedy. </p>
+            </div>
+        </div>
+
+
+      <!-- PCLASSES -->
+        <div class="row">
+            <div class="col-2">
+              <h2 id="pclass">1st class Titanic passenger</h2>
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="row">
+            <div class="col-2" id="buttons">
+              <!-- BUTTON TO CHOSE PCLASS 1 TO 3 -->
+              <input 
+                type="button" 
+                class="pure-button" 
+                value="1st class" 
+                onclick="updatePClass1();" />
+
+              <input 
+                type="button" 
+                class="pure-button" 
+                value="2nd class" 
+                onclick="updatePClass2();" />
+
+              <input 
+                type="button" 
+                class="pure-button" 
+                value="3rd class" 
+                onclick="updatePClass3();" />
+            </div>
+
+        </div>
+
+
+        <div class="row">
+            <!-- AGE PYRAMID -->
+            <div class="col-2" id="chart"></div>
+
+
+          <div class="col-2" id="txt">
+            <!-- STATISTICS -->
+            <h3>Death rate among:</h3>
+            <p class="stat" > Male adults:  <b class="placeholder_size"></b> <b id="male"></b> </p>
+            <p class="stat" > Female adults:  <b class="placeholder_size"></b> <b id="female"></b> </p>
+            <p class="stat" > Childs: <b class="placeholder_size"></b> <b id="childs"></b> </p>
+            <p class="stat" > Elderly: <b class="placeholder_size"></b> <b id="elderly"></b> </p>
+          </div>
+            
+        </div> 
+
+        <div class="row">
+          <!-- CONCLUSION -->
+          <p class="col-3" id="conclusion"></p>
+        </div>
+      
+      </div>
+
+    </div>
+   
+
+    <!-- load the d3.js library -->    
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+
+      <script>
+
+      ///////////////////////////////////////////////////////
+      // HELPER FUNCTIONS
+      function translation(x,y) {
+        return 'translate(' + x + ',' + y + ')';
+      }
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 1. SET THE DIMENSION OF CANVAS & GRAPH
+      var w = 600,
+          h = 400;
+          
+      // margin.middle is distance from center line to each y-axis
+      var margin = {
+        top: 20,
+        right: 20,
+        bottom: 40,
+        left: 20,
+        middle: 35
+      };
+          
+      // the width of each side of the chart
+      var regionWidth = w/2 - margin.middle;
+
+      // these are the x-coordinates of the y-axes
+      var pointA = regionWidth,
+          pointB = w - regionWidth;
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 2. GET THE DATA
+      d3.csv("data/data.csv", function(error, data) {
+          data.forEach(function(d) {
+            d.group = d.age_cat;
+            d.male1 = +d.m_died_pclass1;
+            d.female1 = +d.f_died_pclass1;
+            d.male_total1 = +d.m_total_pclass1;
+            d.female_total1 = +d.f_total_pclass1;
+
+            d.male2 = +d.m_died_pclass2;
+            d.female2 = +d.f_died_pclass2;
+            d.male_total2 = +d.m_total_pclass2;
+            d.female_total2 = +d.f_total_pclass2;
+
+            d.male3 = +d.m_died_pclass3;
+            d.female3 = +d.f_died_pclass3;
+            d.male_total3 = +d.m_total_pclass3;
+            d.female_total3 = +d.f_total_pclass3;
+
+          });
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 3. GET MAXVALUE FOR RANGE OF X-AXIS (and set it global)
+      maxValue = d3.max(data,function(d){return d.male_total3});
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 4. CREATE SVG
+      var svg = d3.select('#chart').append('svg')
+        .attr('width', margin.left + w + margin.right)
+        .attr('height', margin.top + h + margin.bottom)
+        // ADD A GROUP FOR THE SPACE WITHIN THE MARGINS
+        .append('g')
+          .attr('transform', translation(margin.left, margin.top));
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 5. CREATE DEATH-RATE-STATISTICS
+
+      // Calculate adults, elderly and childs and make global variable
+      adults = data.slice(3,10);
+      childs = data.slice(0,2);
+      elderly = data.slice(11,15);
+      dat = data; //make data also global variable
+
+      // Scale Font Size
+      scale = d3.scale.linear()
+        .domain([0, 1])
+        .range([14, 50]);
+
+      // Calculate death-rates
+      var death_rate_general = 
+          d3.sum(data, function(d){ return d.male1; }) /
+          d3.sum(data, function(d){ return d.male_total1; })
+
+      var death_rate_male = 
+          d3.sum(adults, function(d){ return d.male1; }) /
+          d3.sum(adults, function(d){ return d.male_total1; });
+
+      var death_rate_female = 
+                d3.sum(adults, function(d) { return d.female1; }) /
+                d3.sum(adults, function(d) { return d.female_total1; });
+
+      var death_rate_childs = (
+                (d3.sum(childs, function(d) { return d.female1; })  +
+                (d3.sum(childs, function(d) { return d.male1; }) )  ) /
+                (d3.sum(childs, function(d) { return d.female_total1; })  +
+                (d3.sum(childs, function(d) { return d.male_total1; }) ) )
+                );
+
+      var death_rate_elderly = (
+                (d3.sum(elderly, function(d) { return d.female1; })  +
+                (d3.sum(elderly, function(d) { return d.male1; }) )  ) /
+                (d3.sum(elderly, function(d) { return d.female_total1; })  +
+                (d3.sum(elderly, function(d) { return d.male_total1; }) ) )
+                );
+
+      // publish death-rates and set font-size to death-rate
+      d3.select("#general")
+            .text(d3.format("%")(death_rate_general))
+            .style("font-size", scale(death_rate_general)+"px");
+      d3.select("#male")
+            .text(d3.format("%")(death_rate_male))
+            .style("font-size", scale(death_rate_male)+"px");
+      d3.select("#female")
+            .text(d3.format("%")(death_rate_female))
+            .style("font-size", scale(death_rate_female)+"px");
+      d3.select("#childs")
+            .text(d3.format("%")(death_rate_childs))
+            .style("font-size", scale(death_rate_childs)+"px");
+      d3.select("#elderly")
+            .text(d3.format("%")(death_rate_elderly))
+            .style("font-size", scale(death_rate_elderly)+"px");
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 5. SET UP SCALES
+      // the xScale goes from 0 to the width of a region
+      //  it will be reversed for the left x-axis
+      var xScale = d3.scale.linear()
+        .domain([0, maxValue])
+        .range([0, regionWidth])
+        .nice();
+
+      var xScaleLeft = d3.scale.linear()
+        .domain([0, maxValue])
+        .range([regionWidth, 0]);
+
+      var xScaleRight = d3.scale.linear()
+        .domain([0, maxValue])
+        .range([0, regionWidth]);
+
+      var yScale = d3.scale.ordinal()
+        .domain(data.map(function(d) { return d.group; }))
+        .rangeRoundBands([h,0], 0.1);
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 6. SET UP AXES
+      var yAxisLeft = d3.svg.axis()
+        .scale(yScale)
+        .orient('right')
+        .tickSize(4,0)
+        .tickPadding(margin.middle-4);
+
+      var yAxisRight = d3.svg.axis()
+        .scale(yScale)
+        .orient('left')
+        .tickSize(4,0)
+        .tickFormat('');
+
+      var xAxisRight = d3.svg.axis()
+        .scale(xScale)
+        .orient('bottom');
+        //.tickFormat(d3.format('%'));
+
+      var xAxisLeft = d3.svg.axis()
+        // REVERSE THE X-AXIS SCALE ON THE LEFT SIDE BY REVERSING THE RANGE
+        .scale(xScale.copy().range([pointA, 0]))
+        .orient('bottom');
+
+      // Label for y-axis
+      svg.append("text")
+        .attr("class", "x label")
+        .attr("x", w/2)
+        .attr("y", "0")
+        .text("age")
+        .style('text-anchor', 'middle');
+
+      // Label for x-axis
+      svg.append("text")
+        .attr("class", "x label")
+        .attr("x", regionWidth/2)
+        .attr("y", h+30)
+        .text("number of male passengers")
+        .style('text-anchor', 'middle');
+
+      svg.append("text")
+        .attr("class", "x label")
+        .attr("x", w-regionWidth/2)
+        .attr("y", h+30)
+        .text("number of female passengers")
+        .style('text-anchor', 'middle');
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 7. MAKE GROUPS FOR EACH SIDE OF CHART
+      // scale(-1,1) is used to reverse the left side so the bars grow left instead of right
+      var leftBarGroup = svg.append('g')
+        .attr('transform', translation(pointA, 0) + 'scale(-1,1)');
+      var rightBarGroup = svg.append('g')
+        .attr('transform', translation(pointB, 0));
+
+      // DRAW AXES
+      svg.append('g')
+        .attr('class', 'axis y left')
+        .attr('transform', translation(pointA, 0))
+        .call(yAxisLeft)
+        .selectAll('text')
+        .style('text-anchor', 'middle');
+
+      svg.append('g')
+        .attr('class', 'axis y right')
+        .attr('transform', translation(pointB, 0))
+        .call(yAxisRight);
+
+      svg.append('g')
+        .attr('class', 'axis x left')
+        .attr('transform', translation(0, h))
+        .call(xAxisLeft);
+
+      svg.append('g')
+        .attr('class', 'axis x right')
+        .attr('transform', translation(pointB, h))
+        .call(xAxisRight);
+
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      // 8. DRAW BARS
+      // Male Total
+      leftBarGroup.selectAll('.bar.left')
+        .data(data)
+        .enter().append('rect')
+          .attr('class', 'barTotalL')
+          .attr("fill", "blue")
+          .attr('x', 0)
+          .attr('y', function(d) { return yScale(d.group); })
+          .attr('width', function(d) { return xScale(d.male_total1);})
+          .attr('height', yScale.rangeBand());
+
+      // Male Died
+      leftBarGroup.selectAll('.bar.left')
+        .data(data)
+        .enter().append('rect')
+          .attr('class', 'barLeft')
+          .attr("fill", "blue")
+          .attr('x', 0)
+          .attr('y', function(d) { return yScale(d.group); })
+          .attr('width', function(d) { return xScale(d.male1);})
+          .attr('height', yScale.rangeBand());
+
+      // Female Total
+      rightBarGroup.selectAll('.bar.right')
+        .data(data)
+        .enter().append('rect')
+          .attr('class', 'barTotalR')
+          .attr("fill", "red")
+          .attr('x', 0)
+          .attr('y', function(d) { return yScale(d.group); })
+          .attr('width', function(d) { return xScale(d.female_total1); })
+          .attr('height', yScale.rangeBand());
+
+      // Female Died
+      rightBarGroup.selectAll('.bar.right')
+        .data(data)
+        .enter().append('rect')
+          .attr('class', 'barRight')
+          .attr("fill", "red")
+          .attr('x', 0)
+          .attr('y', function(d) { return yScale(d.group); })
+          .attr('width', function(d) { return xScale(d.female1); })
+          .attr('height', yScale.rangeBand());  
+
+
+      // Legend
+
+      // Male
+      // died
+      c = svg;
+      c.append("rect")
+        .attr("x", 30)
+        .attr("y", 0)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "blue");
+
+      c.append("text")
+        .attr("class", "lab")
+        .attr("x", 45)
+        .attr("y", 10)
+        .text("male died");
+
+      // total
+      c.append("rect")
+        .attr("x", 30)
+        .attr("y", 15)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "blue")
+        .attr('class', 'bt');
+      c.append("text")
+        .attr("class", "label")
+        .attr("x", 45)
+        .attr("y", 25)
+        .text("male passengers");
+
+      // Female
+      // died
+      c.append("rect")
+        .attr("x", 30)
+        .attr("y", 30)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "red");
+      c.append("text")
+        .attr("class", "label")
+        .attr("x", 45)
+        .attr("y", 40)
+        .text("female died");
+
+        // total
+      c.append("rect")
+        .attr("x", 30)
+        .attr("y", 45)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "red")
+        .attr('class', 'bt');
+      c.append("text")
+        .attr("class", "label")
+        .attr("x", 45)
+        .attr("y", 55)
+        .text("male passangers");  
+
+      ///////////////////////////////////////////////////////
+      });
+
+
+      ///////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////
+      // UPDATE TO 2ND CLASS (Called from the onclick)
+      function updatePClass2() {
+
+        d3.select("#pclass").text("2nd class Titanic passenger");
+
+        // ACCESS xScale again (I need it for updating the bars)
+        var xScale = d3.scale.linear()
+          .domain([0, maxValue])
+          .range([0, regionWidth])
+          .nice();
+
+          var svg = d3.select("body").transition();
+         
+
+        ///////////////////////////////////////////////////////
+        // UPDATE DEATH-RATE STATISTICS
+        // calculate death rates for age groups of 2nd pclass
+        var death_rate_general = 
+            d3.sum(dat, function(d){ return d.male2; }) /
+            d3.sum(dat, function(d){ return d.male_total2; });
+
+        var death_rate_male = 
+            d3.sum(adults, function(d){ return d.male2; }) /
+            d3.sum(adults, function(d){ return d.male_total2; });
+
+        var death_rate_female = 
+                  d3.sum(adults, function(d) { return d.female2; }) /
+                  d3.sum(adults, function(d) { return d.female_total2; });
+
+        var death_rate_childs = (
+                (d3.sum(childs, function(d) { return d.female2; })  +
+                (d3.sum(childs, function(d) { return d.male2; }) )  ) /
+                (d3.sum(childs, function(d) { return d.female_total2; })  +
+                (d3.sum(childs, function(d) { return d.male_total2; }) ) )
+                );
+
+      var death_rate_elderly = (
+                (d3.sum(elderly, function(d) { return d.female2; })  +
+                (d3.sum(elderly, function(d) { return d.male2; }) )  ) /
+                (d3.sum(elderly, function(d) { return d.female_total2; })  +
+                (d3.sum(elderly, function(d) { return d.male_total2; }) ) )
+                );
+
+        // update death-rates for 2nd pclass
+        svg.select("#general").duration(750).text(d3.format("%")(death_rate_general))
+              .style("font-size", scale(death_rate_general)+"px");
+        svg.select("#male").duration(750)
+              .text(d3.format("%")(death_rate_male))
+              .style("font-size", scale(death_rate_male)+"px");
+        svg.select("#female").duration(750)
+              .text(d3.format("%")(death_rate_female))
+              .style("font-size", scale(death_rate_female)+"px");
+        svg.select("#childs").duration(750)
+              .text(d3.format("%")(death_rate_childs))
+              .style("font-size", scale(death_rate_childs)+"px");
+        svg.select("#elderly").duration(750)
+              .text(d3.format("%")(death_rate_elderly))
+              .style("font-size", scale(death_rate_elderly)+"px");
+
+      ///////////////////////////////////////////////////////
+
+
+        // UPDATE WIDTH OF LEFT BARS
+        svg.selectAll(".barLeft")
+          .duration(750)
+          .attr('width', function(d) { return xScale(d.male2);})
+        svg.selectAll(".barTotalL")
+          .duration(750)
+          .attr('width', function(d) { return xScale(d.male_total2);});
+
+        // UPDATE WIDTH OF RIGHT BARS
+        svg.selectAll(".barRight")
+          .duration(750)
+          .attr('width', function(d) { return xScale(d.female2);})
+        svg.selectAll(".barTotalR")
+          .duration(750)
+          .attr('width', function(d) { return xScale(d.female_total2);});
+      }
+      ///////////////////////////////////////////////////////
+
+
+      ///////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////
+      // UPDATE TO 3rd CLASS (Called from the onclick)
+
+      function updatePClass3() {
+        
+        d3.select("#pclass").text("3rd class Titanic passenger");
+
+        // ACCESS xScale again (I need it for updating the bars)
+        var xScale = d3.scale.linear()
+          .domain([0, maxValue])
+          .range([0, regionWidth])
+          .nice();
+
+          var svg = d3.select("body").transition();
+         
+        ///////////////////////////////////////////////////////
+        // UPDATE DEATH-RATE STATISTICS
+        // calculate death rates for age groups of 3rd pclass
+        var death_rate_general = 
+            d3.sum(dat, function(d){ return d.male3; }) /
+            d3.sum(dat, function(d){ return d.male_total3; });
+
+        var death_rate_male = 
+            d3.sum(adults, function(d){ return d.male3; }) /
+            d3.sum(adults, function(d){ return d.male_total3; });
+
+        var death_rate_female = 
+                  d3.sum(adults, function(d) { return d.female3; }) /
+                  d3.sum(adults, function(d) { return d.female_total3; });
+
+        var death_rate_childs = (
+                (d3.sum(childs, function(d) { return d.female3; })  +
+                (d3.sum(childs, function(d) { return d.male3; }) )  ) /
+                (d3.sum(childs, function(d) { return d.female_total3; })  +
+                (d3.sum(childs, function(d) { return d.male_total3; }) ) )
+                );
+
+        var death_rate_elderly = (
+                  (d3.sum(elderly, function(d) { return d.female3; })  +
+                  (d3.sum(elderly, function(d) { return d.male3; }) )  ) /
+                  (d3.sum(elderly, function(d) { return d.female_total3; })  +
+                  (d3.sum(elderly, function(d) { return d.male_total3; }) ) )
+                  );
+
+        // update death-rates for 2nd pclass
+        svg.select("#general").duration(750).text(d3.format("%")(death_rate_general))
+              .style("font-size", scale(death_rate_general)+"px");
+        svg.select("#male").duration(750)
+              .text(d3.format("%")(death_rate_male))
+              .style("font-size", scale(death_rate_male)+"px");
+        svg.select("#female").duration(750)
+              .text(d3.format("%")(death_rate_female))
+              .style("font-size", scale(death_rate_female)+"px");
+        svg.select("#childs").duration(750)
+              .text(d3.format("%")(death_rate_childs))
+              .style("font-size", scale(death_rate_childs)+"px");
+        svg.select("#elderly").duration(750)
+              .text(d3.format("%")(death_rate_elderly))
+              .style("font-size", scale(death_rate_elderly)+"px");
+
+      ///////////////////////////////////////////////////////
+
+
+        ///////////////////////////////////////////////////////
+        // Update Table
+
+        // Calculate male adult victims in % 
+        var m_percent = d3.format("%")(
+                  d3.sum(adults, function(d) { return d.male3; }) /
+                  d3.sum(adults, function(d) { return d.male_total3; })
+                  );
+        // Calculate female adult victims in % 
+        var f_percent = d3.format("%")(
+                  d3.sum(adults, function(d) { return d.female3; }) /
+                  d3.sum(adults, function(d) { return d.female_total3; })
+                  );
+
+        // Calculate child victims in %var f_percent = d3.format("%")(
+        var c_percent = d3.format("%")(
+                  (d3.sum(childs, function(d) { return d.female3; })  +
+                  (d3.sum(childs, function(d) { return d.male3; }) )  ) /
+                  (d3.sum(childs, function(d) { return d.female_total3; })  +
+                  (d3.sum(childs, function(d) { return d.male_total3; }) ) )
+                  );
+
+        // Put it in Table
+        svg.select("#m").text(m_percent);
+        svg.select("#f").text(f_percent);
+        svg.select("#c").text(c_percent);
+        ///////////////////////////////////////////////////////
+
+        // PRINT CONCLUSION (only if reader saw at least diagrams for 1st and 3rd class)
+        d3.select("#conclusion").text(
+          "Social inequality is twofolded. Firstly, different income groups have different chances. Secondly, minorities (women, children, elderly) with low-income suffer more compared to minorities with high-income.");
+
+          // UPDATE WIDTH OF LEFT BARS
+          svg.selectAll(".barLeft")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.male3);})
+          svg.selectAll(".barTotalL")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.male_total3);});
+
+          // UPDATE WIDTH OF RIGHT BARS
+          svg.selectAll(".barRight")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.female3);})
+          svg.selectAll(".barTotalR")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.female_total3);});
+
+      }
+      ///////////////////////////////////////////////////////
+
+      
+      ///////////////////////////////////////////////////////
+      // UPDATE TO 1st CLASS (Called from the onclick)
+      function updatePClass1() {
+        d3.select("#pclass").text("1st class Titanic passenger");
+
+        // ACCESS xScale again (I need it for updating the bars)
+        var xScale = d3.scale.linear()
+          .domain([0, maxValue])
+          .range([0, regionWidth])
+          .nice();
+
+        var svg = d3.select("body").transition();
+
+         
+          // UPDATE DEATH-RATE STATISTICS
+        // calculate death rates for age groups of 1st pclass
+        var death_rate_general = 
+            d3.sum(dat, function(d){ return d.male1; }) /
+            d3.sum(dat, function(d){ return d.male_total1; });
+
+        var death_rate_male = 
+            d3.sum(adults, function(d){ return d.male1; }) /
+            d3.sum(adults, function(d){ return d.male_total1; });
+
+        var death_rate_female = 
+                  d3.sum(adults, function(d) { return d.female1; }) /
+                  d3.sum(adults, function(d) { return d.female_total1; });
+
+        var death_rate_childs = (
+                (d3.sum(childs, function(d) { return d.female1; })  +
+                (d3.sum(childs, function(d) { return d.male1; }) )  ) /
+                (d3.sum(childs, function(d) { return d.female_total1; })  +
+                (d3.sum(childs, function(d) { return d.male_total1; }) ) )
+                );
+
+        var death_rate_elderly = (
+                  (d3.sum(elderly, function(d) { return d.female1; })  +
+                  (d3.sum(elderly, function(d) { return d.male1; }) )  ) /
+                  (d3.sum(elderly, function(d) { return d.female_total1; })  +
+                  (d3.sum(elderly, function(d) { return d.male_total1; }) ) )
+                  );
+
+        // update death-rates for 1st pclass
+        svg.select("#general").duration(750).text(d3.format("%")(death_rate_general))
+              .style("font-size", scale(death_rate_general)+"px");
+        svg.select("#male").duration(750)
+              .text(d3.format("%")(death_rate_male))
+              .style("font-size", scale(death_rate_male)+"px");
+        svg.select("#female").duration(750)
+              .text(d3.format("%")(death_rate_female))
+              .style("font-size", scale(death_rate_female)+"px");
+        svg.select("#childs").duration(750)
+              .text(d3.format("%")(death_rate_childs))
+              .style("font-size", scale(death_rate_childs)+"px");
+        svg.select("#elderly").duration(750)
+              .text(d3.format("%")(death_rate_elderly))
+              .style("font-size", scale(death_rate_elderly)+"px");
+
+      ///////////////////////////////////////////////////////
+
+          // UPDATE WIDTH OF LEFT BARS
+          svg.selectAll(".barLeft")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.male1);})
+          svg.selectAll(".barTotalL")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.male_total1);});
+
+          // UPDATE WIDTH OF RIGHT BARS
+          svg.selectAll(".barRight")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.female1);})
+          svg.selectAll(".barTotalR")
+            .duration(750)
+            .attr('width', function(d) { return xScale(d.female_total1);});
+        
+      }
+      ///////////////////////////////////////////////////////
+
+      </script>
+  </body>
+</html>
